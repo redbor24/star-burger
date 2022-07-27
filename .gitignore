@@ -142,3 +142,7 @@ dmypy.json
 cython_debug/
 
 .parcel-cache/
+.idea 
+_notes.md 
+scratch.py 
+package-lock.json
