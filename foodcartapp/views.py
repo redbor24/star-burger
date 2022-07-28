@@ -1,8 +1,10 @@
+import phonenumbers
 from django.http import JsonResponse
 from django.templatetags.static import static
+from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.serializers import ModelSerializer
 
 from .models import Order, OrderLines, Product
 
@@ -59,42 +61,52 @@ def product_list_api(request):
     })
 
 
+class OrderLinesSerializer(ModelSerializer):
+    class Meta:
+        model = OrderLines
+        fields = ['product', 'quantity']
+
+
+class OrderSerializer(ModelSerializer):
+    products = OrderLinesSerializer(many=True)
+
+    firstname = serializers.CharField(source='first_name')
+    lastname = serializers.CharField(source='last_name')
+    phonenumber = serializers.CharField(source='phone_number')
+    address = serializers.CharField(source='delivery_address')
+
+    def validate_phonenumber(self, value):
+        if not phonenumbers.is_valid_number(phonenumbers.parse(value, "E164")):
+            raise serializers.ValidationError('Некорректный телефонный номер')
+        return value
+
+    def validate_products(self, value):
+        if not value:
+            raise serializers.ValidationError('Список позиций заказа пуст')
+        return value
+
+    class Meta:
+        model = Order
+        fields = ['order_num', 'firstname', 'lastname', 'phonenumber', 'address', 'products']
+
+
 @api_view(['POST'])
 def register_order(request):
-    order_data = request.data
+    serializer = OrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
 
-    response_msg = ''
-    if 'products' not in order_data:
-        response_msg = 'No "Products" key'
-    else:
-        order_data_products = order_data['products']
-        if order_data_products is None:
-            response_msg = '"Products" is not present'
-        elif type(order_data_products) != list:
-            response_msg = '"Products" is not a list'
-        elif not order_data_products:
-            response_msg = '"Products" list is empty'
+    new_order = Order.objects.create(
+        order_num=Order.get_new_order_num(),
+        first_name=serializer.validated_data['first_name'],
+        last_name=serializer.validated_data['last_name'],
+        phone_number=serializer.validated_data['phone_number'],
+        delivery_address=serializer.validated_data['delivery_address']
+    )
 
-    if response_msg:
-        answer = {'message': response_msg}
-        response_status = status.HTTP_406_NOT_ACCEPTABLE
-    else:
-        new_order = Order.objects.create(
-            order_num=Order.get_new_order_num(),
-            first_name=order_data['firstname'],
-            last_name=order_data['lastname'],
-            phone_number=order_data['phonenumber'],
-            delivery_address=order_data['address']
-        )
-        for num, product in enumerate(order_data['products'], start=1):
-            OrderLines.objects.create(
-                order=new_order,
-                position_num=num,
-                product=Product.objects.get(id=product['product']),
-                quantity=product['quantity']
-            )
+    order_line_fields = serializer.validated_data['products']
+    order_lines = [OrderLines(order=new_order, **fields) for fields in order_line_fields]
+    OrderLines.objects.bulk_create(order_lines)
 
-        answer = {'order_num': new_order.order_num}
-        response_status = status.HTTP_200_OK
-
-    return Response(answer, status=response_status)
+    return Response({
+        'order_id': new_order.id,
+    })
