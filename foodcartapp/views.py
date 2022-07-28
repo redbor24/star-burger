@@ -1,8 +1,8 @@
 from django.http import JsonResponse
 from django.templatetags.static import static
-from rest_framework import permissions
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 
 from .models import Order, OrderLines, Product
 
@@ -60,27 +60,41 @@ def product_list_api(request):
 
 
 @api_view(['POST'])
-# @permission_classes((permissions.AllowAny,))
 def register_order(request):
     order_data = request.data
-    new_order = Order.objects.create(
-        order_num=Order.get_new_order_num(),
-        first_name=order_data['firstname'],
-        last_name=order_data['lastname'],
-        phone_number=order_data['phonenumber'],
-        delivery_address=order_data['address']
-    )
 
-    for num, product in enumerate(order_data['products'], start=1):
-        OrderLines.objects.create(
-            order=new_order,
-            position_num=num,
-            product=Product.objects.get(id=product['product']),
-            quantity=product['quantity']
+    response_msg = ''
+    if 'products' not in order_data:
+        response_msg = 'No "Products" key'
+    else:
+        order_data_products = order_data['products']
+        if order_data_products is None:
+            response_msg = '"Products" is not present'
+        elif type(order_data_products) != list:
+            response_msg = '"Products" is not a list'
+        elif not order_data_products:
+            response_msg = '"Products" list is empty'
+
+    if response_msg:
+        answer = {'message': response_msg}
+        response_status = status.HTTP_406_NOT_ACCEPTABLE
+    else:
+        new_order = Order.objects.create(
+            order_num=Order.get_new_order_num(),
+            first_name=order_data['firstname'],
+            last_name=order_data['lastname'],
+            phone_number=order_data['phonenumber'],
+            delivery_address=order_data['address']
         )
+        for num, product in enumerate(order_data['products'], start=1):
+            OrderLines.objects.create(
+                order=new_order,
+                position_num=num,
+                product=Product.objects.get(id=product['product']),
+                quantity=product['quantity']
+            )
 
-    answer = {
-        'success': True,
-        'order_num': new_order.order_num
-    }
-    return Response(answer)
+        answer = {'order_num': new_order.order_num}
+        response_status = status.HTTP_200_OK
+
+    return Response(answer, status=response_status)
