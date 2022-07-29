@@ -1,4 +1,4 @@
-import phonenumbers
+from phonenumbers import is_valid_number, parse
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework import serializers
@@ -68,7 +68,7 @@ class OrderLinesSerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
-    products = OrderLinesSerializer(many=True)
+    products = OrderLinesSerializer(many=True, write_only=True)
 
     firstname = serializers.CharField(source='first_name')
     lastname = serializers.CharField(source='last_name')
@@ -76,13 +76,13 @@ class OrderSerializer(ModelSerializer):
     address = serializers.CharField(source='delivery_address')
 
     def validate_phonenumber(self, value):
-        if not phonenumbers.is_valid_number(phonenumbers.parse(value, "E164")):
+        if not is_valid_number(parse(value, "E164")):
             raise serializers.ValidationError('Некорректный телефонный номер')
         return value
 
     def validate_products(self, value):
         if not value:
-            raise serializers.ValidationError('Список позиций заказа пуст')
+            raise serializers.ValidationError('Нет позиций заказа')
         return value
 
     class Meta:
@@ -107,6 +107,5 @@ def register_order(request):
     order_lines = [OrderLines(order=new_order, **fields) for fields in order_line_fields]
     OrderLines.objects.bulk_create(order_lines)
 
-    return Response({
-        'order_id': new_order.id,
-    })
+    serializer = OrderSerializer(instance=new_order)
+    return Response(serializer.data)
