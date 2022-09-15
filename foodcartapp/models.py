@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import F, Sum
 from phonenumber_field.modelfields import PhoneNumberField
 
 
@@ -128,6 +129,14 @@ def order_mum_default():
     return '1'
 
 
+class OrderQuerySet(models.QuerySet):
+    def get_order_amount(self):
+        return self.annotate(
+            amount=Sum(F('lines__quantity'))
+            # amount=Sum(F('lines__quantity') * F('lines__product__price'))
+        )
+
+
 class Order(models.Model):
     order_num = models.CharField(max_length=255, verbose_name='Номер заказа', default=order_mum_default)
     first_name = models.CharField(max_length=255, verbose_name='Имя заказчика', db_index=True)
@@ -135,6 +144,8 @@ class Order(models.Model):
     phone_number = PhoneNumberField(verbose_name='Телефон', db_index=True)
     delivery_address = models.TextField(verbose_name='Адрес заказа')
     created_at = models.DateTimeField(verbose_name='Дата и время создания заказа', auto_now_add=True)
+
+    objects = OrderQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'Заказ'
@@ -149,11 +160,13 @@ class Order(models.Model):
 
 
 class OrderLines(models.Model):
-    order = models.ForeignKey(Order, verbose_name='Заказ', db_index=True, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, verbose_name='Заказ', related_name='lines', db_index=True,
+                              on_delete=models.CASCADE)
     position_num = models.IntegerField(verbose_name='Номер позиции', default=1)
-    product = models.ForeignKey(Product, verbose_name='Позиция', related_name='orders', db_index=True,
+    product = models.ForeignKey(Product, verbose_name='Позиция', related_name='order_lines', db_index=True,
                                 on_delete=models.CASCADE)
     quantity = models.IntegerField(verbose_name='Количество, шт.', default=1)
+    price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2, default=0)
 
     class Meta:
         verbose_name = 'Позиции заказа'
