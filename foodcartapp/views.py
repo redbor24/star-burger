@@ -64,7 +64,7 @@ def product_list_api(request):
 class OrderLinesSerializer(ModelSerializer):
     class Meta:
         model = OrderLines
-        fields = ['product', 'quantity']
+        fields = ['product', 'quantity', 'price']
 
 
 class OrderSerializer(ModelSerializer):

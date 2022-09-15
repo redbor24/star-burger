@@ -131,10 +131,7 @@ def order_mum_default():
 
 class OrderQuerySet(models.QuerySet):
     def get_order_amount(self):
-        return self.annotate(
-            amount=Sum(F('lines__quantity'))
-            # amount=Sum(F('lines__quantity') * F('lines__product__price'))
-        )
+        return self.annotate(amount=Sum(F('lines__quantity') * F('lines__product__price')))
 
 
 class Order(models.Model):

@@ -53,6 +53,7 @@ class App extends Component {
       'products': this.state.cart.map(item=>({
         product: item.id,
         quantity: item.quantity,
+        price: item.price
       })),
       firstname,
       lastname,

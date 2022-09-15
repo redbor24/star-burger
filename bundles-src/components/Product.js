@@ -13,10 +13,11 @@ class Product extends Component{
     })
   }
 
-  addToCart(quantity){
+  addToCart(quantity, price){
     let selectedProduct = {
       ...this.props.product,
       quantity: quantity,
+      price: price
     };
 
     this.props.addToCart(selectedProduct);
@@ -54,7 +55,7 @@ class Product extends Component{
           <button
             className={!this.state.isAdded ? "btn btn-primary" : "btn btn-success"}
             type="button"
-            onClick={event => this.addToCart(this.state.quantity)}
+            onClick={event => this.addToCart(this.state.quantity, price)}
           >
             {!this.state.isAdded ? "В корзину" : "✔ Добавлено"}
           </button>
