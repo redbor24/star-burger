@@ -146,6 +146,7 @@ class Order(models.Model):
     delivery_address = models.TextField(verbose_name='Адрес заказа')
     created_at = models.DateTimeField(verbose_name='Дата и время создания заказа', auto_now_add=True)
     status = models.CharField(verbose_name='Статус', max_length=1, choices=ORDER_STATUS, default='u', db_index=True)
+    comment = models.TextField(verbose_name='Комментарий к заказу', blank=True)
 
     objects = OrderQuerySet.as_manager()
 
