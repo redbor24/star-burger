@@ -13,7 +13,7 @@
   <div class="container">
    <table class="table table-responsive">
     <tr>
-      <th>ID заказа</th>
+      <th>№ заказа</th>
       <th>Стоимость заказа</th>
       <th>Клиент</th>
       <th>Телефон</th>
@@ -27,6 +27,9 @@
         <td>{{ order.client }}</td>
         <td>{{ order.phone_number }}</td>
         <td>{{ order.delivery_address }}</td>
+        <td>
+          <a href="{% url 'admin:foodcartapp_order_change' order.id %}?next={{ request.get_full_path|urlencode }}">Редактировать</a>
+        </td>
       </tr>
     {% endfor %}
    </table>

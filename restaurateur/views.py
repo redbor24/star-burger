@@ -100,6 +100,7 @@ def view_orders(request):
     orders = []
     for order in Order.objects.get_order_amount():
         orders.append({
+            'id': order.id,
             'order_num': order.order_num,
             'amount': order.amount,
             'client': f'{order.last_name} {order.first_name}',
