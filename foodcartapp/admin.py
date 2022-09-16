@@ -1,7 +1,10 @@
 from django.contrib import admin
-from django.shortcuts import reverse
+from django.shortcuts import reverse, redirect
 from django.templatetags.static import static
 from django.utils.html import format_html
+from django.utils.http import url_has_allowed_host_and_scheme
+
+from star_burger.settings import ALLOWED_HOSTS
 
 from .models import (Order, OrderLines, Product, ProductCategory, Restaurant,
                      RestaurantMenuItem)
@@ -117,6 +120,15 @@ class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ['created_at']
     inlines = [OrderLinesInline]
     save_on_top = True
+
+    def response_change(self, request, obj):
+        res = super().response_change(request, obj)
+        next = request.GET.get('next')
+
+        if next and url_has_allowed_host_and_scheme(next, ALLOWED_HOSTS):
+            return redirect(next)
+        else:
+            return res
 
 
 @admin.register(OrderLines)
