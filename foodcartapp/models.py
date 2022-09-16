@@ -135,12 +135,17 @@ class OrderQuerySet(models.QuerySet):
 
 
 class Order(models.Model):
+    ORDER_STATUS = (
+        ('u', 'Необработанный'),
+        ('p', 'Обработанный'),
+    )
     order_num = models.CharField(max_length=255, verbose_name='Номер заказа', default=order_mum_default)
     first_name = models.CharField(max_length=255, verbose_name='Имя заказчика', db_index=True)
     last_name = models.CharField(max_length=255, verbose_name='Фамилия заказчика', db_index=True)
     phone_number = PhoneNumberField(verbose_name='Телефон', db_index=True)
     delivery_address = models.TextField(verbose_name='Адрес заказа')
     created_at = models.DateTimeField(verbose_name='Дата и время создания заказа', auto_now_add=True)
+    status = models.CharField(verbose_name='Статус', max_length=1, choices=ORDER_STATUS, default='u', db_index=True)
 
     objects = OrderQuerySet.as_manager()
 

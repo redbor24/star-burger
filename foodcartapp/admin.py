@@ -116,7 +116,9 @@ class OrderLinesInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'order_num', 'first_name', 'last_name', 'phone_number', 'delivery_address', 'created_at']
+    list_display = ['id', 'order_num', 'status', 'first_name', 'last_name', 'phone_number', 'delivery_address',
+                    'created_at']
+    fields = ['order_num', 'status', 'first_name', 'last_name', 'phone_number', 'delivery_address', 'created_at']
     readonly_fields = ['created_at']
     inlines = [OrderLinesInline]
     save_on_top = True
