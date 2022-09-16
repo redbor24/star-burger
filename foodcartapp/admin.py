@@ -78,6 +78,8 @@ class ProductAdmin(admin.ModelAdmin):
         'get_image_preview',
     ]
 
+    save_on_top = True
+
     class Media:
         css = {
             "all": (
@@ -114,6 +116,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'order_num', 'first_name', 'last_name', 'phone_number', 'delivery_address', 'created_at']
     readonly_fields = ['created_at']
     inlines = [OrderLinesInline]
+    save_on_top = True
 
 
 @admin.register(OrderLines)

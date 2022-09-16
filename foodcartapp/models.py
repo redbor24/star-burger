@@ -131,7 +131,7 @@ def order_mum_default():
 
 class OrderQuerySet(models.QuerySet):
     def get_order_amount(self):
-        return self.annotate(amount=Sum(F('lines__quantity') * F('lines__product__price')))
+        return self.annotate(amount=Sum(F('lines__quantity') * F('lines__price')))
 
 
 class Order(models.Model):
@@ -162,8 +162,10 @@ class OrderLines(models.Model):
     position_num = models.IntegerField(verbose_name='Номер позиции', default=1)
     product = models.ForeignKey(Product, verbose_name='Позиция', related_name='order_lines', db_index=True,
                                 on_delete=models.CASCADE)
-    quantity = models.IntegerField(verbose_name='Количество, шт.', default=1)
-    price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2, default=0)
+    quantity = models.IntegerField(verbose_name='Количество, шт.', default=1,
+                                   validators=[MinValueValidator(1)])
+    price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2, default=0,
+                                validators=[MinValueValidator(1, 'Цена должна быть больше 0')])
 
     class Meta:
         verbose_name = 'Позиции заказа'
