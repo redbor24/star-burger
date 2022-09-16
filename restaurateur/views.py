@@ -98,7 +98,7 @@ def view_restaurants(request):
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     orders = []
-    for order in Order.objects.get_order_amount():
+    for order in Order.objects.filter(status='u').get_order_amount():
         orders.append({
             'id': order.id,
             'order_num': order.order_num,
