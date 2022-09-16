@@ -102,7 +102,8 @@ def view_orders(request):
         orders.append({
             'id': order.id,
             'order_num': order.order_num,
-            'amount': order.amount,
+            'payment_type': order.get_payment_type_display(),
+            'amount': 0 if order.amount is None else order.amount,
             'client': f'{order.last_name} {order.first_name}',
             'phone_number': order.phone_number,
             'delivery_address': order.delivery_address,

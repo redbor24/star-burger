@@ -15,6 +15,7 @@
     <tr>
       <th>№ заказа</th>
       <th>Стоимость заказа</th>
+      <th>Тип оплаты</th>
       <th>Клиент</th>
       <th>Телефон</th>
       <th>Адрес доставки</th>
@@ -25,6 +26,7 @@
       <tr>
         <td>{{ order.order_num }}</td>
         <td>{{ order.amount }} руб.</td>
+        <td>{{ order.payment_type }}</td>
         <td>{{ order.client }}</td>
         <td>{{ order.phone_number }}</td>
         <td>{{ order.delivery_address }}</td>

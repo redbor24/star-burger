@@ -140,6 +140,10 @@ class Order(models.Model):
         ('u', 'Необработанный'),
         ('p', 'Обработанный'),
     )
+    PAYMENT_TYPE = (
+        ('cashless', 'По карте при оформлении'),
+        ('cash', 'Наличными при доставке'),
+    )
     order_num = models.CharField(max_length=255, verbose_name='Номер заказа', default=order_mum_default)
     first_name = models.CharField(max_length=255, verbose_name='Имя заказчика', db_index=True)
     last_name = models.CharField(max_length=255, verbose_name='Фамилия заказчика', db_index=True)
@@ -150,6 +154,8 @@ class Order(models.Model):
     comment = models.TextField(verbose_name='Комментарий к заказу', blank=True)
     called_at = models.DateTimeField(verbose_name='Дата звонка', blank=True, null=True, db_index=True)
     delivered_at = models.DateTimeField(verbose_name='Дата доставки', blank=True, null=True, db_index=True)
+    payment_type = models.CharField(verbose_name='Тип оплаты', max_length=12, choices=PAYMENT_TYPE,
+                                    default='cashless', db_index=True)
 
     objects = OrderQuerySet.as_manager()
 

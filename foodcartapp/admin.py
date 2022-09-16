@@ -116,10 +116,18 @@ class OrderLinesInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'order_num', 'status', 'first_name', 'last_name', 'phone_number', 'delivery_address',
-                    'created_at']
-    fields = ['order_num', 'status', 'first_name', 'last_name', 'phone_number', 'delivery_address',
-              'comment', 'called_at', 'delivered_at', 'created_at']
+    list_display = ['id', 'order_num', 'payment_type', 'status', 'first_name', 'last_name', 'phone_number',
+                    'delivery_address', 'created_at']
+    fieldsets = (
+        (None, {'fields': (('order_num', 'status', 'created_at'),
+                           'payment_type',
+                           ('first_name', 'last_name', 'phone_number'),
+                           ('delivery_address', 'comment'),
+                           ('called_at', 'delivered_at')
+                           )
+                }
+         ),
+    )
     readonly_fields = ['created_at']
     inlines = [OrderLinesInline]
     save_on_top = True
