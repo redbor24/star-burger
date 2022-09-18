@@ -139,6 +139,7 @@ class Order(models.Model):
     ORDER_STATUS = (
         ('u', 'Необработанный'),
         ('p', 'Обработанный'),
+        ('i', 'Готовится'),
     )
     PAYMENT_TYPE = (
         ('cashless', 'По карте при оформлении'),
