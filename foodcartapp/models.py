@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import F, Sum
@@ -134,6 +136,26 @@ class OrderQuerySet(models.QuerySet):
     def get_order_amount(self):
         return self.annotate(amount=Sum(F('lines__quantity') * F('lines__price')))
 
+    def get_restoraunts_for_orders(self):
+        """
+        Возвращает для каждого заказа список ресторанов, которые могут его приготовить
+        """
+        restaurants = defaultdict(list)
+        menu_items = RestaurantMenuItem.objects.select_related('restaurant', 'product')
+        for menu_item in menu_items:
+            restaurants[menu_item.product].append(menu_item.restaurant)
+
+        for order in self:
+            order_products = list()
+            products = order.lines.all()
+            for product in products:
+                order_products.append(restaurants[product.product])
+
+            restaurants_for_order = set.intersection(*map(set, order_products))
+            order.restaurants = restaurants_for_order
+
+        return self
+
 
 class Order(models.Model):
     ORDER_STATUS = (
@@ -157,6 +179,8 @@ class Order(models.Model):
     delivered_at = models.DateTimeField(verbose_name='Дата доставки', blank=True, null=True, db_index=True)
     payment_type = models.CharField(verbose_name='Тип оплаты', max_length=12, choices=PAYMENT_TYPE,
                                     default='cashless', db_index=True)
+    restaurant = models.ForeignKey(Restaurant, verbose_name='Ресторан', related_name='restorans',
+                                   on_delete=models.CASCADE, null=True, blank=True)
 
     objects = OrderQuerySet.as_manager()
 
