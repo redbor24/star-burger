@@ -213,3 +213,17 @@ class OrderLines(models.Model):
 
     def __str__(self):
         return f"заказ: {self.order.order_num}, №{self.position_num}, {self.product}, кол-во: {self.quantity}"
+
+
+class Location(models.Model):
+    address = models.CharField(verbose_name='Адрес', max_length=100, db_index=True, unique=True)
+    lat = models.FloatField('Широта', db_index=True, blank=True)
+    lon = models.FloatField('Долгота', db_index=True, blank=True)
+    creation_date = models.DateField(verbose_name='Дата добавления записи', default=timezone.now, db_index=True)
+
+    class Meta:
+        verbose_name = 'Координаты заказа'
+        verbose_name_plural = 'Координаты заказов'
+
+    def __str__(self):
+        return self.address
