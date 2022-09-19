@@ -120,7 +120,7 @@ class OrderAdmin(admin.ModelAdmin):
                     'delivery_address', 'created_at']
     fieldsets = (
         (None, {'fields': (('order_num', 'status', 'created_at'),
-                           'payment_type',
+                           ('payment_type', 'restaurant'),
                            ('first_name', 'last_name', 'phone_number'),
                            ('delivery_address', 'comment'),
                            ('called_at', 'delivered_at')
@@ -140,6 +140,15 @@ class OrderAdmin(admin.ModelAdmin):
             return redirect(next)
         else:
             return res
+
+    def save_model(self, request, obj, form, change):
+        if obj.restaurant and obj.status == 'u':
+            obj.status = 'i'
+            obj.save()
+        elif not obj.restaurant:
+            obj.status = 'u'
+            obj.save()
+        return super().save_model(request, obj, form, change)
 
 
 @admin.register(OrderLines)

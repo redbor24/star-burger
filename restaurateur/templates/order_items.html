@@ -14,17 +14,20 @@
    <table class="table table-responsive">
     <tr>
       <th>№ заказа</th>
+      <th>Состояние</th>
       <th>Стоимость заказа</th>
       <th>Тип оплаты</th>
       <th>Клиент</th>
       <th>Телефон</th>
       <th>Адрес доставки</th>
       <th>Комментарий</th>
+      <th>Рестораны</th>
     </tr>
 
     {% for order in orders %}
       <tr>
         <td>{{ order.order_num }}</td>
+        <td>{{ order.status }}</td>
         <td>{{ order.amount }} руб.</td>
         <td>{{ order.payment_type }}</td>
         <td>{{ order.client }}</td>
@@ -32,6 +35,24 @@
         <td>{{ order.delivery_address }}</td>
         <td>{{ order.comment }}</td>
         <td>
+          <details open>
+            <summary></summary>
+            {% if not order.restaurant %}
+              {% if order.restaurants %}
+                <p><b>Может быть приготовлен в:</b></p>
+                  <ul>
+                  {% for restaurant in order.restaurants %}
+                    <li><p>{{restaurant}}</p></li>
+                  {% endfor %}
+                  </ul>
+              {% else %}
+                <p><b>Нет подходящего ресторана</b></p>
+              {% endif %}
+            {% else %}
+              <p><b>Готовит:</b></p>
+                <ul><li><p>{{order.restaurant}}</p></li></ul>
+            {% endif %}
+          </details>
           <a href="{% url 'admin:foodcartapp_order_change' order.id %}?next={{ request.get_full_path|urlencode }}">Редактировать</a>
         </td>
       </tr>

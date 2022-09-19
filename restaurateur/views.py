@@ -97,19 +97,24 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = []
-    for order in Order.objects.filter(status='u').get_order_amount():
-        orders.append({
+    orders = Order.objects.filter(status__in=['u', 'i']).get_order_amount().order_by('-status', 'created_at').\
+        get_restoraunts_for_orders()
+    orders_for_render = []
+    for order in orders:
+        orders_for_render.append({
             'id': order.id,
             'order_num': order.order_num,
+            'status': order.get_status_display(),
             'payment_type': order.get_payment_type_display(),
             'amount': 0 if order.amount is None else order.amount,
             'client': f'{order.last_name} {order.first_name}',
             'phone_number': order.phone_number,
             'delivery_address': order.delivery_address,
-            'comment': order.comment
+            'comment': order.comment,
+            'restaurant': order.restaurant,
+            'restaurants': order.restaurants
         })
 
     return render(request, template_name='order_items.html', context={
-        'orders': orders,
+        'orders': orders_for_render,
     })
