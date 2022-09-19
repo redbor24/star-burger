@@ -98,7 +98,7 @@ def view_restaurants(request):
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     orders = Order.objects.filter(status__in=['u', 'i']).get_order_amount().order_by('-status', 'created_at').\
-        get_restoraunts_for_orders()
+        get_restaurants_for_orders()
     orders_for_render = []
     for order in orders:
         orders_for_render.append({

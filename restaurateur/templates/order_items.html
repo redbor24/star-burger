@@ -42,7 +42,7 @@
                 <p><b>Может быть приготовлен в:</b></p>
                   <ul>
                   {% for restaurant in order.restaurants %}
-                    <li><p>{{restaurant}}</p></li>
+                    <li>{{restaurant}} {{restaurant.distance_for_order}} км.</li>
                   {% endfor %}
                   </ul>
               {% else %}
@@ -50,7 +50,7 @@
               {% endif %}
             {% else %}
               <p><b>Готовит:</b></p>
-                <ul><li><p>{{order.restaurant}}</p></li></ul>
+                <ul><li>{{order.restaurant}}</li></ul>
             {% endif %}
           </details>
           <a href="{% url 'admin:foodcartapp_order_change' order.id %}?next={{ request.get_full_path|urlencode }}">Редактировать</a>

@@ -6,6 +6,12 @@ from django.db.models import F, Sum
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
+# from .geotools import get_locations, get_distance
+from star_burger.settings import GEO_ENGINE_BASE_URL
+import requests
+from django.conf import settings
+from geopy import distance
+
 
 class Restaurant(models.Model):
     name = models.CharField(
@@ -136,23 +142,29 @@ class OrderQuerySet(models.QuerySet):
     def get_order_amount(self):
         return self.annotate(amount=Sum(F('lines__quantity') * F('lines__price')))
 
-    def get_restoraunts_for_orders(self):
+    def get_restaurants_for_orders(self):
         """
         Возвращает для каждого заказа список ресторанов, которые могут его приготовить
         """
-        restaurants = defaultdict(list)
         menu_items = RestaurantMenuItem.objects.select_related('restaurant', 'product')
+
+        orders_addresses = [order.delivery_address for order in self]
+        restaurants_addresses = list(set([restaurant.restaurant.address for restaurant in menu_items]))
+        locations = get_locations(*orders_addresses, *restaurants_addresses)
+
+        products_in_restaurants = defaultdict(list)
         for menu_item in menu_items:
-            restaurants[menu_item.product].append(menu_item.restaurant)
+            products_in_restaurants[menu_item.product].append(menu_item.restaurant)
 
         for order in self:
             order_products = list()
             products = order.lines.all()
             for product in products:
-                order_products.append(restaurants[product.product])
+                order_products.append(products_in_restaurants[product.product])
 
             restaurants_for_order = set.intersection(*map(set, order_products))
             order.restaurants = restaurants_for_order
+            get_distance(order, locations)
 
         return self
 
@@ -227,3 +239,50 @@ class Location(models.Model):
 
     def __str__(self):
         return self.address
+
+
+def fetch_coordinates(address):
+    response = requests.get(GEO_ENGINE_BASE_URL, params={
+        'geocode': address,
+        'apikey': settings.YANDEX_GEOCODER_API,
+        'format': 'json',
+    })
+    response.raise_for_status()
+    found_places = response.json()['response']['GeoObjectCollection']['featureMember']
+
+    if not found_places:
+        return None
+
+    most_relevant = found_places[0]
+    lon, lat = most_relevant['GeoObject']['Point']['pos'].split(' ')
+    return lat, lon
+
+
+def get_distance(order, locations):
+    order_coordinates = locations.get(order.delivery_address)
+    for restaurant in order.restaurants:
+        restaurant_coordinates = locations.get(restaurant.address)
+        if order_coordinates and restaurant_coordinates:
+            restaurant.distance_for_order = round(distance.distance(order_coordinates, restaurant_coordinates).km, 3)
+        else:
+            restaurant.distance_for_order = 10.0
+    return order
+
+
+def get_locations(*addresses):
+    locations = {
+        location.address: (location.lat, location.lon)
+        for location in Location.objects.filter(address__in=addresses)
+    }
+    new_locations = list()
+    for address in addresses:
+        if address in locations.keys():
+            continue
+        coordinates = fetch_coordinates(address)
+        if coordinates:
+            lat, lon = coordinates
+            location = Location(address=address, lat=lat, lon=lon)
+            locations[location.address] = (location.lat, location.lon,)
+            new_locations.append(location)
+    Location.objects.bulk_create(new_locations)
+    return locations
