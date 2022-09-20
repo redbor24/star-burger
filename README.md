@@ -61,7 +61,7 @@ pip install -r requirements.txt
 SECRET_KEY=django-insecure-0if40nf4nf93n4
 DEBUG=True
 ALLOWED_HOSTS=127.0.0.1, loclhost
-DATABASE_URL=local
+АDATABASE_URL=local
 ```
 
 [Получите ключ](https://dvmn.org/encyclopedia/api-docs/yandex-geocoder-api/) для Яндекс Geo-API и добавьте в ваш
@@ -76,6 +76,11 @@ YANDEX_GEOCODER_API=<ваш ключ>
 python manage.py migrate
 ```
 
+Создайте суперпользователя Django:
+```sh
+python manage.py createsuperuser
+```
+
 Запустите сервер:
 
 ```sh
@@ -84,7 +89,7 @@ python manage.py runserver
 
 Откройте сайт в браузере по адресу [http://127.0.0.1:8000/](http://127.0.0.1:8000/). Если вы увидели пустую белую страницу, то не пугайтесь, выдохните. Просто фронтенд пока ещё не собран. Переходите к следующему разделу README.
 
-### Собрать фронтенд
+### Сборка фронтенда
 
 **Откройте новый терминал**. Для работы сайта в dev-режиме необходима одновременная работа сразу двух программ `runserver` и `parcel`. Каждая требует себе отдельного терминала. Чтобы не выключать `runserver` откройте для фронтенда новый терминал и все нижеследующие инструкции выполняйте там.
 
@@ -116,14 +121,14 @@ npm ci --dev
 
 Помимо прочего будет установлен [Parcel](https://parceljs.org/) — это упаковщик веб-приложений, похожий на [Webpack](https://webpack.js.org/). В отличии от Webpack он прост в использовании и совсем не требует настроек.
 
-Теперь запустите сборку фронтенда и не выключайте. Parcel будет работать в фоне и следить за изменениями в JS-коде:
+Теперь запустите сборку фронтенда и не выключайте. Parcel будет работать в фоне и следить за изменениями в JS-коде.
 
+*nix:
 ```sh
 ./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir bundles --public-url="./"
 ```
 
-Если вы на Windows, то вам нужна та же команда, только с другими слешами в путях:
-
+Windows:
 ```sh
 .\node_modules\.bin\parcel watch bundles-src/index.js --dist-dir bundles --public-url="./"
 ```
@@ -165,4 +170,4 @@ Parcel будет следить за файлами в каталоге `bundle
 
 Где используется репозиторий:
 
-- Второй и третий урок [учебного модуля Django](https://dvmn.org/modules/django/)
+- Второй урок [учебного модуля Django](https://dvmn.org/modules/django/)
