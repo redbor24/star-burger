@@ -217,7 +217,7 @@ class OrderLines(models.Model):
     quantity = models.IntegerField(verbose_name='Количество, шт.', default=1,
                                    validators=[MinValueValidator(1)])
     price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2, default=0,
-                                validators=[MinValueValidator(1, 'Цена должна быть больше 0')])
+                                validators=[MinValueValidator(0, 'Цена не может быть меньше нуля')])
 
     class Meta:
         verbose_name = 'Позиции заказа'
