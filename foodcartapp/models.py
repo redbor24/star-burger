@@ -264,8 +264,6 @@ def get_distance(order, locations):
         restaurant_coordinates = locations.get(restaurant.address)
         if order_coordinates and restaurant_coordinates:
             restaurant.distance_for_order = round(distance.distance(order_coordinates, restaurant_coordinates).km, 3)
-        else:
-            restaurant.distance_for_order = 10.0
     return order
 
 
