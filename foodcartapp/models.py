@@ -189,8 +189,7 @@ class Order(models.Model):
     comment = models.TextField(verbose_name='Комментарий к заказу', blank=True)
     called_at = models.DateTimeField(verbose_name='Дата звонка', blank=True, null=True, db_index=True)
     delivered_at = models.DateTimeField(verbose_name='Дата доставки', blank=True, null=True, db_index=True)
-    payment_type = models.CharField(max_length=12, verbose_name='Тип оплаты', choices=PAYMENT_TYPE,
-                                    default='cashless', db_index=True)
+    payment_type = models.CharField(max_length=12, verbose_name='Тип оплаты', choices=PAYMENT_TYPE, db_index=True)
     restaurant = models.ForeignKey(Restaurant, verbose_name='Ресторан', related_name='restorans',
                                    on_delete=models.CASCADE, null=True, blank=True)
 
