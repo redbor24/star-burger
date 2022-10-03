@@ -179,17 +179,17 @@ class Order(models.Model):
         ('cashless', 'По карте при оформлении'),
         ('cash', 'Наличными при доставке'),
     )
-    order_num = models.CharField(max_length=255, verbose_name='Номер заказа', default=order_mum_default)
+    order_num = models.CharField(max_length=20, verbose_name='Номер заказа', default=order_mum_default)
     first_name = models.CharField(max_length=255, verbose_name='Имя заказчика', db_index=True)
     last_name = models.CharField(max_length=255, verbose_name='Фамилия заказчика', db_index=True)
     phone_number = PhoneNumberField(verbose_name='Телефон', db_index=True)
-    delivery_address = models.TextField(verbose_name='Адрес заказа')
+    delivery_address = models.CharField(max_length=255, verbose_name='Адрес заказа')
     created_at = models.DateTimeField(verbose_name='Дата и время создания заказа', default=timezone.now, db_index=True)
-    status = models.CharField(verbose_name='Статус', max_length=1, choices=ORDER_STATUS, default='u', db_index=True)
+    status = models.CharField(max_length=1, verbose_name='Статус', choices=ORDER_STATUS, default='u', db_index=True)
     comment = models.TextField(verbose_name='Комментарий к заказу', blank=True)
     called_at = models.DateTimeField(verbose_name='Дата звонка', blank=True, null=True, db_index=True)
     delivered_at = models.DateTimeField(verbose_name='Дата доставки', blank=True, null=True, db_index=True)
-    payment_type = models.CharField(verbose_name='Тип оплаты', max_length=12, choices=PAYMENT_TYPE,
+    payment_type = models.CharField(max_length=12, verbose_name='Тип оплаты', choices=PAYMENT_TYPE,
                                     default='cashless', db_index=True)
     restaurant = models.ForeignKey(Restaurant, verbose_name='Ресторан', related_name='restorans',
                                    on_delete=models.CASCADE, null=True, blank=True)
@@ -228,7 +228,7 @@ class OrderLines(models.Model):
 
 
 class Location(models.Model):
-    address = models.CharField(verbose_name='Адрес', max_length=100, db_index=True, unique=True)
+    address = models.CharField(max_length=100, verbose_name='Адрес', db_index=True, unique=True)
     lat = models.FloatField('Широта', db_index=True, blank=True)
     lon = models.FloatField('Долгота', db_index=True, blank=True)
     creation_date = models.DateField(verbose_name='Дата добавления записи', default=timezone.now, db_index=True)
