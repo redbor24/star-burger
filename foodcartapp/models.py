@@ -135,7 +135,7 @@ class RestaurantMenuItem(models.Model):
 
 
 def order_mum_default():
-    return '1'
+    return Order.objects.count() + 1
 
 
 class OrderQuerySet(models.QuerySet):
@@ -179,7 +179,7 @@ class Order(models.Model):
         ('cashless', 'По карте при оформлении'),
         ('cash', 'Наличными при доставке'),
     )
-    order_num = models.CharField(max_length=20, verbose_name='Номер заказа', default=order_mum_default)
+    order_num = models.CharField(max_length=20, verbose_name='Номер заказа', default=order_mum_default, unique=True)
     first_name = models.CharField(max_length=255, verbose_name='Имя заказчика', db_index=True)
     last_name = models.CharField(max_length=255, verbose_name='Фамилия заказчика', db_index=True)
     phone_number = PhoneNumberField(verbose_name='Телефон', db_index=True)
