@@ -210,8 +210,7 @@ class Order(models.Model):
 class OrderLines(models.Model):
     order = models.ForeignKey(Order, verbose_name='Заказ', related_name='lines', db_index=True,
                               on_delete=models.CASCADE)
-    position_num = models.IntegerField(verbose_name='Номер позиции', default=1)
-    product = models.ForeignKey(Product, verbose_name='Позиция', related_name='order_lines', db_index=True,
+    product = models.ForeignKey(Product, verbose_name='Продукт', related_name='order_lines', db_index=True,
                                 on_delete=models.CASCADE)
     quantity = models.IntegerField(verbose_name='Количество, шт.', default=1,
                                    validators=[MinValueValidator(1)])
