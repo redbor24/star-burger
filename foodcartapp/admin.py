@@ -138,8 +138,8 @@ class OrderAdmin(admin.ModelAdmin):
 
         if next and url_has_allowed_host_and_scheme(next, ALLOWED_HOSTS):
             return redirect(next)
-        else:
-            return res
+
+        return res
 
     def save_model(self, request, obj, form, change):
         if obj.restaurant and obj.status == 'u':
