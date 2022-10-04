@@ -159,12 +159,14 @@ class OrderQuerySet(models.QuerySet):
         for order in self:
             order_products = list()
             products = order.lines.all()
-            for product in products:
-                order_products.append(products_in_restaurants[product.product])
+            order.restaurants = {}
+            if products:
+                for product in products:
+                    order_products.append(products_in_restaurants[product.product])
 
-            restaurants_for_order = set.intersection(*map(set, order_products))
-            order.restaurants = restaurants_for_order
-            get_distance(order, locations)
+                restaurants_for_order = set.intersection(*map(set, order_products))
+                order.restaurants = restaurants_for_order
+                get_distance(order, locations)
 
         return self
 
@@ -222,7 +224,7 @@ class OrderLines(models.Model):
         verbose_name_plural = 'Позиции заказов'
 
     def __str__(self):
-        return f"заказ: {self.order.order_num}, №{self.position_num}, {self.product}, кол-во: {self.quantity}"
+        return f"заказ: {self.order.order_num}, {self.product}, кол-во: {self.quantity}"
 
 
 class Location(models.Model):
