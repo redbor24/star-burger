@@ -176,7 +176,6 @@ class Order(models.Model):
         ('cashless', 'По карте при оформлении'),
         ('cash', 'Наличными при доставке'),
     )
-    order_num = models.CharField(max_length=20, verbose_name='Номер заказа', default=order_mum_default, unique=True)
     first_name = models.CharField(max_length=255, verbose_name='Имя заказчика', db_index=True)
     last_name = models.CharField(max_length=255, verbose_name='Фамилия заказчика', db_index=True)
     phone_number = PhoneNumberField(verbose_name='Телефон', db_index=True)
@@ -199,10 +198,6 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.id}, {self.last_name} {self.first_name}, {self.phone_number}, {self.delivery_address}"
 
-    @classmethod
-    def get_new_order_num(cls):
-        return Order.objects.count() + 1
-
 
 class OrderLines(models.Model):
     order = models.ForeignKey(Order, verbose_name='Заказ', related_name='lines', db_index=True,
@@ -219,4 +214,4 @@ class OrderLines(models.Model):
         verbose_name_plural = 'Позиции заказов'
 
     def __str__(self):
-        return f"заказ: {self.order.order_num}, {self.product}, кол-во: {self.quantity}"
+        return f"заказ: {self.order.id}, {self.product}, кол-во: {self.quantity}"
