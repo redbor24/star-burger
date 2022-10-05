@@ -88,7 +88,7 @@ class OrderSerializer(ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['order_num', 'firstname', 'lastname', 'phonenumber', 'address', 'products']
+        fields = ['id', 'firstname', 'lastname', 'phonenumber', 'address', 'products']
 
 
 @transaction.atomic
@@ -98,7 +98,6 @@ def register_order(request):
     serializer.is_valid(raise_exception=True)
 
     new_order = Order.objects.create(
-        order_num=Order.get_new_order_num(),
         first_name=serializer.validated_data['first_name'],
         last_name=serializer.validated_data['last_name'],
         phone_number=serializer.validated_data['phone_number'],

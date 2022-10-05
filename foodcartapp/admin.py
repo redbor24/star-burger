@@ -116,10 +116,12 @@ class OrderLinesInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'order_num', 'payment_type', 'status', 'first_name', 'last_name', 'phone_number',
-                    'delivery_address', 'created_at']
+    # list_display = ['id', 'payment_type', 'status', 'first_name', 'last_name', 'phone_number',
+    list_display = ['last_name', 'first_name', 'phone_number', 'delivery_address',
+                    'payment_type', 'status', 'created_at']
     fieldsets = (
-        (None, {'fields': (('order_num', 'status', 'created_at'),
+        # (None, {'fields': (('id', 'status', 'created_at'),
+        (None, {'fields': (('status', 'created_at'),
                            ('payment_type', 'restaurant'),
                            ('first_name', 'last_name', 'phone_number'),
                            ('delivery_address', 'comment'),

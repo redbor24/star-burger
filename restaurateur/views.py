@@ -103,7 +103,7 @@ def view_orders(request):
     for order in orders:
         orders_for_render.append({
             'id': order.id,
-            'order_num': order.order_num,
+            'order_has_no_coords': order.order_has_no_coords,
             'status': order.get_status_display(),
             'payment_type': order.get_payment_type_display(),
             'amount': 0 if order.amount is None else order.amount,
@@ -112,7 +112,7 @@ def view_orders(request):
             'delivery_address': order.delivery_address,
             'comment': order.comment,
             'restaurant': order.restaurant,
-            'restaurants': order.restaurants
+            'available_restaurants': order.restaurants
         })
 
     return render(request, template_name='order_items.html', context={

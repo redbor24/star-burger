@@ -40,9 +40,10 @@ def fetch_coordinates(address):
 
 def get_distance(order, locations):
     order_coordinates = locations.get(order.delivery_address)
-    for restaurant in order.restaurants:
-        restaurant_coordinates = locations.get(restaurant.address)
-        if order_coordinates and restaurant_coordinates:
+    order.order_has_no_coords = not any(order_coordinates)
+    if not order.order_has_no_coords:
+        for restaurant in order.restaurants:
+            restaurant_coordinates = locations.get(restaurant.address)
             restaurant.distance_for_order = round(distance.distance(order_coordinates, restaurant_coordinates).km, 3)
     return order
 
@@ -59,8 +60,10 @@ def get_locations(*addresses):
         coordinates = fetch_coordinates(address)
         if coordinates:
             lat, lon = coordinates
-            location = Location(address=address, lat=lat, lon=lon)
-            locations[location.address] = (location.lat, location.lon,)
-            new_locations.append(location)
+        else:
+            lat, lon = None, None
+        location = Location(address=address, lat=lat, lon=lon)
+        locations[location.address] = (location.lat, location.lon,)
+        new_locations.append(location)
     Location.objects.bulk_create(new_locations)
     return locations
