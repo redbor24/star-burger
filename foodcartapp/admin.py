@@ -120,7 +120,7 @@ class OrderAdmin(admin.ModelAdmin):
                     'payment_type', 'status', 'created_at']
     fieldsets = (
         (None, {'fields': (('status', 'created_at'),
-                           ('payment_type', 'restaurant'),
+                           ('payment_type', 'cooked_in_restaurant'),
                            ('first_name', 'last_name', 'phone_number'),
                            ('delivery_address', 'comment'),
                            ('called_at', 'delivered_at')
@@ -142,10 +142,10 @@ class OrderAdmin(admin.ModelAdmin):
         return res
 
     def save_model(self, request, obj, form, change):
-        if obj.restaurant and obj.status == 'u':
+        if obj.cooked_in_restaurant and obj.status == 'u':
             obj.status = 'i'
             obj.save()
-        elif not obj.restaurant:
+        elif not obj.cooked_in_restaurant:
             obj.status = 'u'
             obj.save()
         return super().save_model(request, obj, form, change)

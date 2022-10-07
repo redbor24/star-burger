@@ -111,7 +111,7 @@ def view_orders(request):
             'phone_number': order.phone_number,
             'delivery_address': order.delivery_address,
             'comment': order.comment,
-            'restaurant': order.restaurant,
+            'restaurant': order.cooked_in_restaurant,
             'available_restaurants': order.restaurants
         })
 
