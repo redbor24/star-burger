@@ -6,7 +6,7 @@ from django.db.models import F, Sum
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
-from location.models import get_locations, get_distance
+from location.yandex_geocoder import get_locations, get_distance
 
 
 class Restaurant(models.Model):
