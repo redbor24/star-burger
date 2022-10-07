@@ -3,11 +3,9 @@ from django.conf import settings
 from geopy import distance
 from location.models import Location
 
-from star_burger.settings import GEO_ENGINE_BASE_URL
-
 
 def fetch_coordinates(address):
-    response = requests.get(GEO_ENGINE_BASE_URL, params={
+    response = requests.get(settings.GEO_ENGINE_BASE_URL, params={
         'geocode': address,
         'apikey': settings.YANDEX_GEOCODER_API,
         'format': 'json',
