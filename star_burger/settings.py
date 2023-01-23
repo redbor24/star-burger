@@ -1,4 +1,5 @@
 import os
+import rollbar
 
 import dj_database_url
 
@@ -43,6 +44,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'star_burger.middleware.RollbarNotifierMiddlewareExcluding404AndPermissionDenied',  # should be listed last
 ]
 
 ROOT_URLCONF = 'star_burger.urls'
@@ -61,6 +63,20 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.logging.LoggingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
 ]
+
+ROLLBAR = {
+    'access_token': env.str('ROLLBAR_TOKEN', default=''),
+    'environment': env.str('ROLLBAR_ENVIRONMENT', default='development'),
+    'branch': 'master',
+    'root': BASE_DIR,
+    'enabled': bool(env.str('ROLLBAR_TOKEN', default='')),
+    'locals': {
+        'enabled': True,
+        'safe_repr': False,
+    }
+}
+rollbar.init(**ROLLBAR)
+print(f'ROLLBAR: {ROLLBAR}')
 
 TEMPLATES = [
     {

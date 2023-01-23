@@ -56,6 +56,9 @@ def product_list_api(request):
             }
         }
         dumped_products.append(dumped_product)
+
+    a = 1 / 0
+
     return JsonResponse(dumped_products, safe=False, json_dumps_params={
         'ensure_ascii': False,
         'indent': 4,
