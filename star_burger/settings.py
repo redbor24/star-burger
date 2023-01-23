@@ -76,7 +76,6 @@ ROLLBAR = {
     }
 }
 rollbar.init(**ROLLBAR)
-print(f'ROLLBAR: {ROLLBAR}')
 
 TEMPLATES = [
     {
