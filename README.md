@@ -54,14 +54,51 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-#### Переменные окружения
+## Установка Postgres
+### Windows
+[Скачайте](https://www.postgresql.org/download/windows/) PostgresQL,
+[установите](https://winitpro.ru/index.php/2019/10/25/ustanovka-nastrojka-postgresql-v-windows/).
+Задайте пароль пользователя `postgres`. Создайте базу данных.
+
+### Linux
+```bash
+sudo apt update
+# Установите СУБД PostgreSQL:
+sudo apt -y install postgresql
+# После установки СУБД откройте терминал и переключитесь на пользователя postgres с помощью команды:
+sudo -i -u postgres
+# Создаём базу
+createdb starburgerdb
+# Задаём пароль пользователю postgres
+psql
+\password postgres
+Enter new password:
+# вводим пароль
+```
+
+
+## Подключение базы данных Postgres к проекту Django
+```python
+# star_burger/settings.py
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'starburgerdb',
+        'USER': 'postgres',
+        'PASSWORD': '<пароль пользователя postgres>',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+```
+
+### Переменные окружения
 
 В каталоге `star_burger/` создайте файл `.env` и заполните его следующими строковыми данными:
 ```
 SECRET_KEY=<Секретный ключ Django-проекта>
 DEBUG=True
 ALLOWED_HOSTS=127.0.0.1, loclhost
-DATABASE_URL=local
 ```
 
 [Получите ключ](https://dvmn.org/encyclopedia/api-docs/yandex-geocoder-api/) для Яндекс Geo-API и добавьте в ваш
@@ -71,7 +108,6 @@ YANDEX_GEOCODER_API=<ваш ключ>
 ```
 
 Выполните миграции:
-
 ```sh
 python manage.py migrate
 ```
@@ -82,21 +118,24 @@ python manage.py createsuperuser
 ```
 
 Запустите сервер:
-
 ```sh
 python manage.py runserver
 ```
 
-Откройте сайт в браузере по адресу [http://127.0.0.1:8000/](http://127.0.0.1:8000/). Если вы увидели пустую белую страницу, то не пугайтесь, выдохните. Просто фронтенд пока ещё не собран. Переходите к следующему разделу README.
+Откройте сайт в браузере по адресу [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
+Если вы увидели пустую белую страницу, то не пугайтесь, выдохните. Просто фронтенд пока ещё не собран.
+Переходите к следующему разделу README.
 
 ### Сборка фронтенда
 
-**Откройте новый терминал**. Для работы сайта в dev-режиме необходима одновременная работа сразу двух программ `runserver` и `parcel`. Каждая требует себе отдельного терминала. Чтобы не выключать `runserver` откройте для фронтенда новый терминал и все нижеследующие инструкции выполняйте там.
+**Откройте новый терминал**. Для работы сайта в dev-режиме необходима одновременная работа сразу двух
+программ `runserver` и `parcel`. Каждая требует себе отдельного терминала. Чтобы не выключать `runserver`
+откройте для фронтенда новый терминал и все нижеследующие инструкции выполняйте там.
 
 [Установите Node.js](https://nodejs.org/en/), если у вас его ещё нет.
 
-Проверьте, что `Node.js` и его пакетный менеджер корректно установлены. Если всё исправно, то терминал выведет их версии:
-
+Проверьте, что `Node.js` и его пакетный менеджер корректно установлены. Если всё исправно, то терминал выведет
+их версии:
 ```sh
 nodejs --version
 # v12.18.2
@@ -108,7 +147,8 @@ npm --version
 # 6.14.5
 ```
 
-Версия `nodejs` должна быть не младше 10.0. Версия `npm` не важна. Как обновить Node.js читайте в статье: [How to Update Node.js](https://phoenixnap.com/kb/update-node-js-version).
+Версия `nodejs` должна быть не младше 10.0. Версия `npm` не важна. Как обновить Node.js читайте
+в статье: [How to Update Node.js](https://phoenixnap.com/kb/update-node-js-version).
 
 Перейдите в каталог проекта и установите пакеты Node.js:
 
