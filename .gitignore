@@ -2,7 +2,6 @@ deploy_star_burger.sh
 sb_sqlite.json
 star_burger/gunicorn.py
 star_burger/gunicorn.sh
-starburger-clearsessions.py
 starburger-clearsessions.sh
 static/
 staticfiles/
