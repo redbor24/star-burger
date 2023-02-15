@@ -1,3 +1,4 @@
+devman.pub
 deploy_star_burger.sh
 sb_sqlite.json
 star_burger/gunicorn.py
