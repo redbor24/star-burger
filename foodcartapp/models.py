@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models import F, Sum
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
+from taggit.managers import TaggableManager
 
 from location.yandex_geocoder import get_locations, get_distance
 
@@ -23,6 +24,11 @@ class Restaurant(models.Model):
         'контактный телефон',
         max_length=50,
         blank=True,
+    )
+    tags = TaggableManager(
+        verbose_name='Теги',
+        help_text='Добавьте тэги для быстрого поиска',
+        blank=True
     )
 
     class Meta:
